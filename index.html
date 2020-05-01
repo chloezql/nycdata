@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Final chloe</title>
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script src="https://unpkg.com/topojson@3"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css?family=Lobster">
+        <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css?family=Galada">
+        <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css?family=Domine">
+   <style media="screen">
+        
+        title{
+            color: white
+        }
+      .bar {
+        fill: rgb(48, 48, 94);
+      }
+      #bars{
+          margin: auto;
+          text-align: center;
+          margin-top: 30px;
+      }
+      select{
+          margin:auto;
+      }
+      .tool-tip {
+        position: absolute;
+        text-align: center;
+        width: 60px;
+        height: 28px;
+        padding: 2px;
+        font: 12px sans-serif;
+        background: lightsteelblue;
+        border: 0px;
+        border-radius: 8px;
+        pointer-events: none;
+      }
+
+      .chart .mouseover {
+        fill: lightsteelblue;
+      }
+      h1 {
+        font-family: 'Galada', serif;
+        text-align: center;
+        font-size: 45px;
+        width: 55%;
+        margin: auto;
+        margin-top: 80px;
+        margin-bottom: 40px;
+
+      }
+      #intro{
+          width:50%;
+          margin: auto;
+          font-size: 20px;
+          text-align: center;
+          font-family: 'Domine',serif;
+          
+          
+      }
+      #menu{
+        position: absolute; 
+                bottom: 10px; 
+                color: white;
+                background-color: peru;
+                height: 40px;
+                width:300px;
+
+      }
+      
+      row{
+          height:100px;
+      }
+      .col{
+          width: 50%;
+          height: 20px;
+          margin-top: 40px;
+      }
+      svg {
+        display: block;
+        margin: 0 auto;
+      }
+      body{
+          background-color: rgb(255, 255, 255);
+      }
+      svg{
+          background-color: rgb(41, 40, 40);
+      }
+    #indicator{
+        background-image: linear-gradient(to right,rgb(224, 220, 220) ,rgb(216, 150, 106),rgb(207, 103, 33) ,rgb(173, 65, 2), rgb(87, 19, 0));
+        width: 350px;
+        height: 20px;
+        margin: auto;
+        margin-top: 15px;
+        border:1px solid ;
+        position: absolute; 
+        bottom: 25px; 
+
+    }
+    #indi{
+        position: absolute; 
+        bottom: -10px; 
+    }
+    </style>
+  </head>
+  
+  
+  
+  
+  <body>
+      <h1>WHERE and WHO are the "New Yorkers"?</h1>
+      <h4 id="intro" >Here is a visualization of NYC Demographic census.
+           It shows you the percentage of population divided by gender, ethnicity and race.
+        The color is mapped based on the percentage. You will find out the distribution of 
+    different social group and their favorite location to live. </h4>
+    <div id="bars" class="row" >
+        <div class="col">  <select class="col align-bottom" name="" id="menu"></select> </div>
+       
+        <div class="col">
+            <div id="indicator"></div>
+            <p id="indi">
+                0% - percent of total count in this region  - 100%
+            </p>
+        </div>
+        
+    </div>
+    <svg id ="svg"></svg>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <script type="text/javascript">
+        let worldCupData, mapData;
+        
+
+        
+
+d3.csv('demographic-nyc.csv')
+	.then(function(worldCupDataset) {
+		worldCupData = worldCupDataset;
+		isDataReady();
+	});
+
+d3.json('nyc_zipcodes.geo.json')
+	// d3.json('nyc_zipcodes.geo.json')
+	.then(function(mapDataset) {
+		mapData = mapDataset.features; //convert topojson to geojson
+		// mapData = mapDataset.features;	//if already geoJson, just get the features array.
+		console.log(mapData);
+		isDataReady();
+	});
+
+
+function isDataReady(gender) {
+	if (mapData && worldCupData) {
+		console.log('Datasets are ready');
+		drawMap();
+	}
+
+}
+var allGroup = ["COUNT FEMALE", "COUNT MALE", "COUNT GENDER UNKNOWN", "COUNT PACIFIC ISLANDER","COUNT HISPANIC LATINO","COUNT AMERICAN INDIAN","COUNT ASIAN NON HISPANIC","COUNT WHITE NON HISPANIC","COUNT BLACK NON HISPANIC","COUNT OTHER ETHNICITY"];
+var allPercent = ["PERCENT FEMALE", "PERCENT MALE", "PERCENT GENDER UNKNOWN", "PERCENT PACIFIC ISLANDER","PERCENT HISPANIC LATINO","PERCENT AMERICAN INDIAN","PERCENT ASIAN NON HISPANIC","PERCENT WHITE NON HISPANIC","PERCENT BLACK NON HISPANIC","PERCENT OTHER ETHNICITY"];
+
+// Initialize the button
+var dropdownButton = d3.select("#menu")
+
+// add the options to the button
+dropdownButton // Add a button
+  .selectAll('myOptions') // Next 4 lines add 6 options = 6 colors
+ 	.data(allPercent)
+  .enter()
+	.append('option')
+  .text(function (d) { return d; }) // text showed in the menu
+  .attr("value", function (d) { return d; }) // corresponding value returned by the button
+
+
+function drawMap() {
+
+	let projection = d3.geoMercator();
+
+	//try  d3.geoMercator() d3.geoEqualEarth(), d3.geoNaturalEarth1(), d3.geoOrthographic() //apply a projection if mapData doesn't have a projection already applied
+
+	//projection([123, 2345]); //take longtitude, latitude and returns pixels x,y.
+	projection
+		 .scale(85000)
+		 //.rotate([00,0])
+		 .center([-73.9534208,40.8075627]);
+
+	let pathGenerator = d3.geoPath(projection);
+	//pathGenerator(feature); //this will return d attribute to use path. ie. "M 10 20 40..."
+
+	var svg = d3.select('#svg').attr('width', '70%').attr('height', '1000px');
+
+	svg.selectAll('path')
+		.data(mapData)
+		.enter()
+		.append('path')
+		.attr('d', pathGenerator)
+		.style('fill', function(feature) {
+			let name = feature.properties.postalcode;
+			let myRow = worldCupData.find(function(countryRow) {
+				return countryRow['JURISDICTION NAME'] == name;
+			});
+			// let myRow = worldCupData.find(countryRow => countryRow['Country'] == name)
+			// `${d}%` means d + '%'
+			if (myRow) {
+				return d3.interpolateOranges(myRow['PERCENT FEMALE'] / 1);
+			} else { //those countries that never been to worldcup
+				return '#ffffff';
+			}
+		})
+		.style('stroke', '#999')
+		.on('mouseover', function(feature) {
+			d3.select(this).style("fill", "rgb(255, 255, 50)");
+		  console.log("just had a mouseover", d3.select(feature));
+			let centerPixels = pathGenerator.centroid(feature);
+			//console.log(centerPixels);
+		  svg.append("rect")
+				 .attr("x",  d3.mouse(this)[0]-65)
+				 .attr("y",d3.mouse(this)[1]+20)
+				 .attr("width", 130)
+				 .attr("height", 20)
+		     .style("fill","white")
+            .style('stroke', '#999')
+            .style('border-radius', '10px');
+		
+			svg.append('text')
+				.attr('x', d3.mouse(this)[0])
+				.attr('y', d3.mouse(this)[1]+35)
+				.attr('text-anchor', 'middle')
+				.style('pointer-events', 'none')
+				.text(feature.properties.po_name +" "+feature.properties.postalcode);
+		
+		
+			
+		})
+		.on('mouseleave', function(feature) {
+			svg.selectAll('text').remove();
+		svg.selectAll('rect').remove();
+		  d3.select(this).style('fill', function(feature) {
+			let name = feature.properties.postalcode;
+			let myRow = worldCupData.find(function(countryRow) {
+				return countryRow['JURISDICTION NAME'] == name;
+			});
+			// let myRow = worldCupData.find(countryRow => countryRow['Country'] == name)
+			// `${d}%` means d + '%'
+			if (myRow) {
+				return d3.interpolateOranges(myRow['PERCENT FEMALE'] / 1);
+			} else { //those countries that never been to worldcup
+				return '#ffffff';
+			}
+		})
+		});
+};
+
+
+function update(gender){
+	let projection = d3.geoMercator();
+
+	projection
+		 .scale(80000)
+		 //.rotate([00,0])
+		 .center([-73.9934208,40.6375627]);
+
+	let pathGenerator = d3.geoPath(projection);
+	var svg = d3.select('body').select('svg');
+	svg.selectAll('path')
+	.style('fill', function(feature) {
+			let name = feature.properties.postalcode;
+			let myRow = worldCupData.find(function(countryRow) {
+				return countryRow['JURISDICTION NAME'] == name;
+			});
+			// let myRow = worldCupData.find(countryRow => countryRow['Country'] == name)
+			// `${d}%` means d + '%'
+			if (myRow) {
+				return d3.interpolateOranges(myRow[gender] / 1);
+			} else { //those countries that never been to worldcup
+				return '#ffffff';
+			}
+		})
+	.style('stroke', '#999')
+		.on('mouseover', function(feature) {
+			d3.select(this).style("fill", "blue");
+		  console.log("just had a mouseover", d3.select(feature));
+			let centerPixels = pathGenerator.centroid(feature);
+			//console.log(centerPixels);
+		  svg.append("rect")
+				 .attr("x",  d3.mouse(this)[0]-65)
+				 .attr("y",d3.mouse(this)[1]+20)
+				 .attr("width", 130)
+				 .attr("height", 20)
+		     .style("fill","white")
+		    .style('stroke', '#999');
+		
+			svg.append('text')
+				.attr('x', d3.mouse(this)[0])
+				.attr('y', d3.mouse(this)[1]+35)
+				.attr('text-anchor', 'middle')
+				.style('pointer-events', 'none')
+				.text(feature.properties.po_name +" "+feature.properties.postalcode);
+		})
+	.on('mouseleave', function(feature) {
+		  svg.selectAll('text').remove();
+			svg.selectAll('rect').remove();
+		  d3.select(this).style('fill', function(feature) {
+			let name = feature.properties.postalcode;
+			let myRow = worldCupData.find(function(countryRow) {
+				return countryRow['JURISDICTION NAME'] == name;
+			});
+			// let myRow = worldCupData.find(countryRow => countryRow['Country'] == name)
+			// `${d}%` means d + '%'
+			if (myRow) {
+				return d3.interpolateOranges(myRow[gender] / 1);
+			} else { //those countries that never been to worldcup
+				return '#ffffff';
+			}
+		})
+		});
+}
+
+dropdownButton.on("change", function(d) {
+
+// recover the option that has been chosen
+var selectedOption = d3.select(this).property("value")
+console.log("message is ",selectedOption)
+// run the updateChart function with this selected option
+update(selectedOption)
+})
+    </script>
+  </body>
+</html>
