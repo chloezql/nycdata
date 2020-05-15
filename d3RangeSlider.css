@@ -1,13 +1,17 @@
 .slider-container {
-    background-color: #f2f2f9;
+
+    background-image: url(./bell-curve.png) ;
+    background-size: cover;
+    height: 50px;
 }
 
 .slider {
     position: absolute;
     border: 1px solid #AAB;
-    background: rgb(238, 187, 190);
-    height: 100%;
-    width: 58px;
+   
+    background-color: rgba(238, 187, 190,0.5);
+    height: 50px;
+    width: 80%;
     top: 0px;
     cursor: move;
     /*margin:-0.5px;*/
@@ -40,17 +44,3 @@
     top: 50%;
     margin-top: -4px;
 }
-
-.play-container .button{
-    fill-opacity: 0.0;
-    stroke: #AAB;
-    stroke-width: 1.6;
-}
-
-.play-container .play, .play-container .stop {
-    fill: rgb(238, 187, 190);
-    stroke: #AAB;
-    stroke-width: 1;
-}
-
-

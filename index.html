@@ -79,16 +79,7 @@
           
           
       }
-      #menu{
-        position: absolute; 
-                bottom: 10px; 
-                color: white;
-                background-color: peru;
-                height: 40px;
-                width:300px;
-
-      }
-      
+    
       row{
           height:100px;
       }
@@ -124,7 +115,7 @@
         bottom: -10px; 
     }
 	mark.airbnb{
-		color:#FF779B;
+		color:#FF5A5F;
     background: none;
 	}
 	img{
@@ -165,25 +156,67 @@
 	font-weight: bold;
 	border-radius: 3px;		
 }
-#slider-container {
-           position: relative;
-           height:30px;
-		   background-color: #eeeef5;
-		   width: 30%;
-		   margin: auto;
-       }
-#range-label{
-		width: 30%;
+
+.range-label{
+		width: 80%;
 		margin: auto;
 		text-align: center;
 }
-#range-title{
-		width: 30%;
+.range-title{
+		width: 80%;
 		margin: auto;
 		text-align: center;
 }
-#sliders{
+.select{
+	height:100px;
+	width: 300px;
+	margin: auto;
 	margin-top: 30px;
+}
+.dropdown{
+	margin-top: 30px;
+	height:50px;
+	width: 300px;
+	margin: auto;
+	text-align: center;
+	color: white;
+	background-color: #FF5A5F;
+}
+#menu{
+	margin: auto;
+}
+#slider-container{
+	height: 50px;
+	background-size: cover;
+}
+#slider-container-2{
+	height: 50px;
+}
+#block_container
+{
+    text-align:center;
+}
+.slider-container {
+
+background-color: rgb(211, 216, 216) ;
+background: rgb(226, 226, 226);
+background-size: cover;
+height: 50px;
+}
+.slider{
+	height: 50px;
+	background-color: rgba(255, 90, 95,0.7);
+
+
+}
+.dropdownSelector{
+	height:100px;
+	width: 300px;
+	margin: auto;
+	
+}
+.btn-secondary{
+	width: 100%;
 }
 	</style>
   </head>
@@ -199,15 +232,10 @@
 			Don't panic! Reading through this analysis, you will know where is the most cozy and <mark class="airbnb">"New York styled"</mark>Airbnb. 
 	</h4>
     <div id="bars" class="row" >
-        <!--<div class="col">  <select class="col align-bottom" name="" id="menu"></select> </div>
+     
        
-        <div class="col">
-            <div id="indicator"></div>
-            <p id="indi">
-                0% - percent of total count in this region  - 100%
-            </p>
-		</div>
-	-->
+        
+
 	<form id="form" class="btn-group btn-group-toggle" data-toggle="buttons">
 		<label class="btn btn-outline-danger active">
 		<input type="radio" name="controlHeatmapType" value="each" onclick="updateStyle(this.value)" checked>Show by room<br>
@@ -217,57 +245,98 @@
 		</label>
 	</form>
 	</div>
-	<div id="sliders">
-		<div id="range-title">Pick your Price Range: </div>
-		<div id="slider-container"></div>
-		<div id="range-label">0 - 10</div>
-
-	</div>
+	
+				<div id="singleSelector">
+					<div id="sliders" class="select ">
+						<div class="range-title" id="range-title">Pick your Price Range: </div>
+						<div class="slider-container" id="slider-container"></div>
+						<div class="range-label" id="range-label">0 - 10</div>
+					</div>
+		
+					<div id="sliders2" class="select ">
+						<div class="range-title" id="range-title-2">Pick your Price Range: </div>
+						<div class="slider-container" id="slider-container-2"></div>
+						<div class="range-label" id="range-label-2">0 - 10</div>
+					</div>
+					<div class="select">
+						<p >Pick your room type</p>
+						<select class="dropdown" name="" id="menu"></select></div>
+					<div class="select"><button  type="submit" class="btn btn-secondary  btn-lg" 
+						 onclick="updataSearch(nightSelectMin,nightSelectMax,priceSelectMin,priceSelectMax,neighbourhoodSelect,roomTypeSelect);"> Check</button></div>
+			
+				</div>
+		
+				<div id="GroupSelector">
+					<div class="dropdownSelector" id="dropdownGroupSelector">
+						<p >Pick your room type</p>
+						<select class="dropdown" name="" id="menuGroup"></select>
+					</div>
+				</div>
+			
+				
+	
+	
+		
+		
+	
+	
     <svg id ="svg"></svg>
     
     
     
     
-    
-    
-    
-    
-    
-    
-    <script type="text/javascript">
+	<script type="text/javascript">
+	
+		
+
+
+
+
+
+
+
+
+
+
+
         let worldCupData, mapData;
 		var data;
-		var slider = createD3RangeSlider(0, 300, "#slider-container");
+		var nightSelectMax;
+		var nightSelectMin;
+		var priceSelectMax;
+		var priceSelectMin;
+		var neighbourhoodSelect;
+		var roomTypeSelect;
+		var GroupSelect;
+		var allRoom = ["Entire home/apt","Private room", "Shared room"];
+		var allType = ["count","price-avg","night-avg","review-avg"];
+		
 
-		slider.onChange(function(newRange){
-			d3.select("#range-label").text(newRange.begin + "$ - " + newRange.end+"$");
+		var slider2 = createD3RangeSlider(1, 365, "#slider-container-2");
+
+		slider2.onChange(function(newRange){
+			d3.select("#range-label-2").text(newRange.begin + "night - " + newRange.end+"nights");
+			nightSelectMax = newRange.end;
+			nightSelectMin = newRange.begin;
+			//updatedPrice(newRange.begin,newRange.end)
 		});
 
-		slider.range(0,300);
+		slider2.range(1,365);
 	
 
         
-//d3.sum(d, function(g) {return g.value; });})
-d3.csv('airbnb1.csv')
+
+d3.csv('airbnb2.csv')
 	.then(function(csv) {
 		worldCupData =csv;
 		console.log(worldCupData)
-		/*data = d3.nest()
-		.key(function(d) { return d.neighbourhood;})
-		.rollup(function(d) { 
-		return d3.sum(d, 1);
-		}).entries(csv);
-		console.log(data)
-		*/
 		isDataReady();
 	});
 
 
 d3.json('NTA-map.geojson')
-	// d3.json('nyc_zipcodes.geo.json')
 	.then(function(mapDataset) {
 		mapData = mapDataset.features; //convert topojson to geojson
-		// mapData = mapDataset.features;	//if already geoJson, just get the features array.
 		console.log(mapData);
 		isDataReady();
 	});
@@ -276,38 +345,114 @@ d3.json('NTA-map.geojson')
 function isDataReady(gender) {
 	if (mapData && worldCupData ) {
 		console.log('Datasets are ready');
+		//allNeighbourhood = d3.map(worldCupData, function(d){return(d.area)}).keys()
+		//console.log(allNeighbourhood)
 		drawMap();
 	}
 
 }
-var allGroup = ["COUNT FEMALE", "COUNT MALE", "COUNT GENDER UNKNOWN", "COUNT PACIFIC ISLANDER","COUNT HISPANIC LATINO","COUNT AMERICAN INDIAN","COUNT ASIAN NON HISPANIC","COUNT WHITE NON HISPANIC","COUNT BLACK NON HISPANIC","COUNT OTHER ETHNICITY"];
-var allPercent = ["PERCENT FEMALE", "PERCENT MALE", "PERCENT GENDER UNKNOWN", "PERCENT PACIFIC ISLANDER","PERCENT HISPANIC LATINO","PERCENT AMERICAN INDIAN","PERCENT ASIAN NON HISPANIC","PERCENT WHITE NON HISPANIC","PERCENT BLACK NON HISPANIC","PERCENT OTHER ETHNICITY"];
+
 var g;
 const zoom = d3.zoom()
       .scaleExtent([1, 8])
 	  .on('zoom', zoomed);
-// Initialize the button
-//var dropdownButton = d3.select("#menu")
 
-/*
+ 
+// Initialize the button
+var dropdownButton = d3.select("#menu")
 // add the options to the button
 dropdownButton // Add a button
   .selectAll('myOptions') // Next 4 lines add 6 options = 6 colors
- 	.data(allPercent)
+ 	.data(allRoom)
   .enter()
 	.append('option')
   .text(function (d) { return d; }) // text showed in the menu
   .attr("value", function (d) { return d; }) // corresponding value returned by the button
-*/
+  dropdownButton.on("change", function(d) {
+	// recover the option that has been chosen
+	var selectedOption = d3.select(this).property("value")
+	roomTypeSelect = selectedOption})
 
+var dropdownButtonGroup = d3.select("#menuGroup")
+// add the options to the button
+dropdownButtonGroup // Add a button
+  .selectAll('myOptions') // Next 4 lines add 6 options = 6 colors
+ 	.data(allType)
+  .enter()
+	.append('option')
+  .text(function (d) { return d; }) // text showed in the menu
+  .attr("value", function (d) { return d; }) // corresponding value returned by the button
+  dropdownButtonGroup.on("change", function(d) {
+	// recover the option that has been chosen
+	var selectedOption = d3.select(this).property("value")
+	GroupSelect = selectedOption
+	if(selectedOption == "count"){
+		drawGroup(selectedOption,"area")
+	}else if(selectedOption == "price-avg"){
+		drawGroup(selectedOption,"area-price")
+	}else if(selectedOption == "night-avg"){
+		drawGroup(selectedOption,"area-night")
+	}
+	else{
+		drawGroup(selectedOption,"area-review")
+	}
+
+	})
+
+
+
+var slider = createD3RangeSlider(0, 300, "#slider-container");	
+slider.onChange(function(newRange){
+	d3.select("#range-label").text(newRange.begin + "$ - " + newRange.end+"$");
+	priceSelectMin = newRange.begin;
+	priceSelectMax = newRange.end;
+	//updatedPrice(newRange.begin,newRange.end)
+});
+
+
+slider.range(0,300);
+
+
+/*
+  var dropdownButton2 = d3.select("#menu2")
+// add the options to the button
+dropdownButton2 // Add a button
+  .selectAll('myOptions') // Next 4 lines add 6 options = 6 colors
+ 	.data(allNeighbourhood)
+  .enter()
+	.append('option')
+  .text(function (d) { return d; }) // text showed in the menu
+  .attr("value", function (d) { return d; }) // corresponding value returned by the button
+
+dropdownButton2.on("change", function(d) {
+	// recover the option that has been chosen
+	var selectedOption = d3.select(this).property("value")
+	neighbourhoodSelect = selectedOption})
+
+*/
 function drawMap() {
 	let projection = d3.geoMercator();
 	var div = d3.select("body").append("div")	
 	.attr("class", "tooltip")			
 	.attr("id", "singlediv")	
     .style("opacity", 0);
-	
-	
+
+	/*
+	var slider1 = d3.select("#singleSelector")
+           .append("div")
+            .attr("class","select")
+            .attr("id","sliders")
+	slider1.append("div")
+			.attr("class","range-title")
+            .attr("id","range-title")
+			.text("Pick your price range");
+	slider1.append("div")
+			.attr("class","slider-container")
+            .attr("id","slider-container");
+	slider1.append("div")
+			.attr("class","range-label")
+            .attr("id","range-label")
+*/
 	//try  d3.geoMercator() d3.geoEqualEarth(), d3.geoNaturalEarth1(), d3.geoOrthographic() //apply a projection if mapData doesn't have a projection already applied
 
 	//projection([123, 2345]); //take longtitude, latitude and returns pixels x,y.
@@ -324,6 +469,9 @@ function drawMap() {
 	d3.select("body").select("#singlediv").selectAll("*").remove();
 	g = svg.append('g');
     svg.call(zoom);
+
+	d3.select("body").select("#singleSelector").selectAll("*").style('opacity','1');
+	d3.select("body").select("#GroupSelector").selectAll("*").style('opacity','0');
 
 	
 	g.selectAll('path')
@@ -348,14 +496,11 @@ function drawMap() {
                  //.attr("r", function (d) {
                  //    return Math.sqrt(parseInt(d.complaints));
                  //})
-                 .style("fill", "#FF92B0")
+                 .style("fill", "#FF5A5F")
 				 .style("opacity", .3)
 				 .on('mouseover', function(single) {
-			d3.select(this).style("fill", "rgb(255, 255, 50)");
-		  	//console.log("just had a mouseover", d3.select(feature));
-			//let centerPixels = pathGenerator.centroid(feature);
-			//console.log(centerPixels);
-
+					 if(d3.select(this).style("opacity") != 0){
+						d3.select(this).style("fill", "rgb(255, 255, 50)");
 				div.transition()		
                 .duration(200)		
                 .style("opacity", .9);		
@@ -371,12 +516,14 @@ function drawMap() {
 					)	
                 .style("left", (d3.event.pageX+20) + "px")		
                 .style("top", (d3.event.pageY - 28) + "px");
+					 }
+			
 				
 				})
 				.on('mouseleave', function(single) {
 					g.selectAll('text').remove();
 					g.selectAll('rect').remove();
-				d3.select(this).style("fill", "#FF92B0")
+				d3.select(this).style("fill", "#FF5A5F")
 				div.transition()		
                 .duration(200)		
                 .style("opacity", 0);	
@@ -464,9 +611,10 @@ console.log(val)
 if(val == "each"){
 	drawMap()
 }else{
-	drawGroup()
+	drawGroup("count","area")
 }
 }
+
 function drawSingle(){
 	var slider_year = document.getElementById("price").value;
 
@@ -514,7 +662,7 @@ function drawSingle(){
 				 
 }
 
-function drawGroup(){
+function drawGroup(type,area){
 
 	var div = d3.select("body").select("#singlediv")
 	
@@ -531,11 +679,15 @@ function drawGroup(){
 	//pathGenerator(feature); //this will return d attribute to use path. ie. "M 10 20 40..."
 	d3.select("body").select("svg").selectAll("*").remove();
 	d3.select("body").select("#singlediv").selectAll("*").remove();
+	d3.select("body").select("#singleSelector").selectAll("*").style('opacity','0');
+	d3.select("body").select("#GroupSelector").selectAll("*").style('opacity','1');
+
 	var svg = d3.select('#svg');
 	g = svg.append('g');
     svg.call(zoom);
 
-	g.selectAll('path')
+	if(type == "count"){
+		g.selectAll('path')
 		.data(mapData)
 		.enter()
 		.append('path')
@@ -565,6 +717,7 @@ function drawGroup(){
 			});
 			if (current) {
 				count = current['count'];
+				count = parseInt(count, 10);
 			}
 			//console.log(centerPixels);
 			div.transition()		
@@ -599,11 +752,262 @@ function drawGroup(){
                 .duration(200)		
                 .style("opacity", 0);	
 			});
+	}
+	
+	else if(type == "price-avg"){
+		g.selectAll('path')
+		.data(mapData)
+		.enter()
+		.append('path')
+		.attr('d', pathGenerator)
+		.style('fill', function(feature) {
+			let name = feature.properties.ntaname;
+			let myRow = worldCupData.find(function(countryRow) {
+				return countryRow['area-price'] == name;
+			});
+			// let myRow = worldCupData.find(countryRow => countryRow['Country'] == name)
+			// `${d}%` means d + '%'
+			if (myRow) {
+				return d3.interpolateOranges(myRow['price-avg'] / 500);
+			} else { //those countries that never been to worldcup
+				return '#ffffff';
+			}
+		})
+		.style('stroke', '#999')
+		.on('mouseover', function(feature) {
+			d3.select(this).style("fill", "rgb(255, 255, 50)");
+		  console.log("just had a mouseover", d3.select(feature));
+			let centerPixels = pathGenerator.centroid(feature);
+			let count= 0;
+			let name = feature.properties.ntaname;
+			let current = worldCupData.find(function(countryRow) {
+				return countryRow['area-price'] == name;
+			});
+			if (current) {
+				count = current['price-avg'];
+				count = parseInt(count, 10);
+			}
+			//console.log(centerPixels);
+			div.transition()		
+                .duration(200)		
+                .style("opacity", .9);		
+            	div.html(
+					"<div class = tool> <mark class=tool-title>Neighbourhood</mark> : "+feature.properties.ntaname+"</div>"+
+					"<div class = tool>  <mark class=tool-title>Average Price of Airbnb</mark>: $"+count+"</div>"
+					)	
+                .style("left", (d3.event.pageX+20) + "px")		
+                .style("top", (d3.event.pageY - 28) + "px");
+			
+			})
+			.on('mouseleave', function(feature) {
+				g.selectAll('text').remove();
+				g.selectAll('rect').remove();
+			d3.select(this).style('fill', function(feature) {
+				let name = feature.properties.ntaname;
+				let myRow = worldCupData.find(function(countryRow) {
+					return countryRow['area-price'] == name;
+				});
+				// let myRow = worldCupData.find(countryRow => countryRow['Country'] == name)
+				// `${d}%` means d + '%'
+				if (myRow) {
+					return d3.interpolateOranges(myRow['price-avg'] / 500);
+				} else { //those countries that never been to worldcup
+					return '#ffffff';
+				}
+			})
+
+			div.transition()		
+                .duration(200)		
+                .style("opacity", 0);	
+			});
+	}
+
+	else if(type == "night-avg"){
+		g.selectAll('path')
+		.data(mapData)
+		.enter()
+		.append('path')
+		.attr('d', pathGenerator)
+		.style('fill', function(feature) {
+			let name = feature.properties.ntaname;
+			let myRow = worldCupData.find(function(countryRow) {
+				return countryRow['area-night'] == name;
+			});
+			// let myRow = worldCupData.find(countryRow => countryRow['Country'] == name)
+			// `${d}%` means d + '%'
+			if (myRow) {
+				return d3.interpolateOranges(myRow['night-avg'] / 15);
+			} else { //those countries that never been to worldcup
+				return '#ffffff';
+			}
+		})
+		.style('stroke', '#999')
+		.on('mouseover', function(feature) {
+			d3.select(this).style("fill", "rgb(255, 255, 50)");
+		  console.log("just had a mouseover", d3.select(feature));
+			let centerPixels = pathGenerator.centroid(feature);
+			let count= 0;
+			let name = feature.properties.ntaname;
+			let current = worldCupData.find(function(countryRow) {
+				return countryRow['area-night'] == name;
+			});
+			if (current) {
+				count = current['night-avg'];
+				count = parseInt(count, 10);
+			}
+			//console.log(centerPixels);
+			div.transition()		
+                .duration(200)		
+                .style("opacity", .9);		
+            	div.html(
+					"<div class = tool> <mark class=tool-title>Neighbourhood</mark> : "+feature.properties.ntaname+"</div>"+
+					"<div class = tool>  <mark class=tool-title>Average Night of Airbnb</mark>: "+count+"</div>"
+					)	
+                .style("left", (d3.event.pageX+20) + "px")		
+                .style("top", (d3.event.pageY - 28) + "px");
+			
+			})
+			.on('mouseleave', function(feature) {
+				g.selectAll('text').remove();
+				g.selectAll('rect').remove();
+			d3.select(this).style('fill', function(feature) {
+				let name = feature.properties.ntaname;
+				let myRow = worldCupData.find(function(countryRow) {
+					return countryRow['area-night'] == name;
+				});
+				// let myRow = worldCupData.find(countryRow => countryRow['Country'] == name)
+				// `${d}%` means d + '%'
+				if (myRow) {
+					return d3.interpolateOranges(myRow['night-avg'] / 15);
+				} else { //those countries that never been to worldcup
+					return '#ffffff';
+				}
+			})
+
+			div.transition()		
+                .duration(200)		
+                .style("opacity", 0);	
+			});
+	}
+	else {
+		g.selectAll('path')
+		.data(mapData)
+		.enter()
+		.append('path')
+		.attr('d', pathGenerator)
+		.style('fill', function(feature) {
+			let name = feature.properties.ntaname;
+			let myRow = worldCupData.find(function(countryRow) {
+				return countryRow['area-review'] == name;
+			});
+			// let myRow = worldCupData.find(countryRow => countryRow['Country'] == name)
+			// `${d}%` means d + '%'
+			if (myRow) {
+				return d3.interpolateOranges(myRow['review-avg'] / 50);
+			} else { //those countries that never been to worldcup
+				return '#ffffff';
+			}
+		})
+		.style('stroke', '#999')
+		.on('mouseover', function(feature) {
+			d3.select(this).style("fill", "rgb(255, 255, 50)");
+		  console.log("just had a mouseover", d3.select(feature));
+			let centerPixels = pathGenerator.centroid(feature);
+			let count= 0;
+			let name = feature.properties.ntaname;
+			let current = worldCupData.find(function(countryRow) {
+				return countryRow['area-review'] == name;
+			});
+			if (current) {
+				count = current['review-avg'];
+				count = parseInt(count, 10);
+			}
+			//console.log(centerPixels);
+			div.transition()		
+                .duration(200)		
+                .style("opacity", .9);		
+            	div.html(
+					"<div class = tool> <mark class=tool-title>Neighbourhood</mark> : "+feature.properties.ntaname+"</div>"+
+					"<div class = tool>  <mark class=tool-title>Average umber of Review</mark>: "+count+"</div>"
+					)	
+                .style("left", (d3.event.pageX+20) + "px")		
+                .style("top", (d3.event.pageY - 28) + "px");
+			
+			})
+			.on('mouseleave', function(feature) {
+				g.selectAll('text').remove();
+				g.selectAll('rect').remove();
+			d3.select(this).style('fill', function(feature) {
+				let name = feature.properties.ntaname;
+				let myRow = worldCupData.find(function(countryRow) {
+					return countryRow['area-review'] == name;
+				});
+				// let myRow = worldCupData.find(countryRow => countryRow['Country'] == name)
+				// `${d}%` means d + '%'
+				if (myRow) {
+					return d3.interpolateOranges(myRow['review-avg'] / 50);
+				} else { //those countries that never been to worldcup
+					return '#ffffff';
+				}
+			})
+
+			div.transition()		
+                .duration(200)		
+                .style("opacity", 0);	
+			});
+	}
+
+
+	
 
 
 
 }
 
+
+function updataSearch(nightSelectMin,nightSelectMax,priceSelectMin,priceSelectMax,neighbourhoodSelect,roomTypeSelect){
+	let g = d3.select("#svg").select('g');
+	g.selectAll("circle")
+	.filter(function(d){
+		return d.price > priceSelectMax || d.price < priceSelectMin || 
+		d.minimum_nights>nightSelectMax || d.minimum_nights<nightSelectMin ||
+	    d.room_type != roomTypeSelect;
+
+	})
+	.transition()
+	.duration(200)
+	.style('opacity',0); //hide all
+
+
+	g.selectAll("circle")
+	.filter(function(d){
+		return d.price <= priceSelectMax && d.price >= priceSelectMin &&
+		d.minimum_nights<=nightSelectMax && d.minimum_nights>=nightSelectMin &&
+		d.room_type == roomTypeSelect;
+	})
+	.transition()
+	.duration(200)
+	.style('opacity',0.3); 
+
+
+/*
+				function(single) {
+					g.selectAll('text').remove();
+					g.selectAll('rect').remove();
+				d3.select(this).style("fill", "#FF5A5F")
+				div.transition()		
+                .duration(200)		
+                .style("opacity", 0);	
+				}
+*/
+
+
+
+
+
+
+
+}
 function zoomed() {
       g
         .selectAll('path') // To prevent stroke width from scaling
