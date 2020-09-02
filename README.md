@@ -1,3 +1,3 @@
 # dataviz
 
-Final Porject of Data Visualization
+A heatmap of Airbnb in NYC. 
