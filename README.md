@@ -1,6 +1,6 @@
  ![](/screenshots/6.png)
 
-
+Live demo at: https://chloezql.github.io/nycdata/
 ### This data visualization has two modes: show-by-room and show-by-neighbourhood
 ![](/screenshots/1.png)
 
