@@ -1,9 +1,7 @@
-# Where to Airbnb like a Pro in NYC 
+ ![](/screenshots/6.png)
 
-A heatmap of Airbnb data in NYC.  
-![](/screenshots/6.png)
 
-#### This data visualization has two modes: show-by-room and show-by-neighbourhood
+### This data visualization has two modes: show-by-room and show-by-neighbourhood
 ![](/screenshots/1.png)
 
 ### Show-by-room mode
